@@ -1,0 +1,301 @@
+<html>
+<head>
+<link href="../test.css" rel="stylesheet" type="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>وارد کردن پین</title>
+</head><body>
+<?php
+    include ("../head.php");
+    
+    $target_table = "TBLPINS";
+
+	$conn = oci_connect( $user , $pass , $db );
+	if( !$conn ){
+        $e = oci_error();
+        print htmlentities($e['message']);
+        exit;
+		
+	}
+        
+	   $i = 0;
+
+		$result = run_my_query( $conn , "select category,amount,name from tblcategory" );
+        while ($row = oci_fetch_array($result, OCI_RETURN_NULLS)) {
+			$CategoryTable[ $row[0] ] = $row[1];
+			$cat_i[$i]["Category"] = $row[0];
+			$cat_i[$i]["Name"] = $row[2];
+			$i++;
+		}
+		$c_count = $i;
+		oci_free_statement( $result );
+	
+	if( isset( $_POST[ "Submit2" ] ) 
+	){
+		
+		$Batch_ID = "";
+		$timestamp = "";
+		
+		$batch_name = $_POST[ "BatchName" ];
+		$category = $_POST[ "Category" ];
+		
+		$fname = $_FILES['Filename']['tmp_name'];
+		$handle = fopen( $fname , "r" );
+		$timestamp = 0;
+		$result = run_my_query( $conn , "select cast((sysdate - to_date('01-01-1970','DD-MM-YYYY')) * (86400) as number(10)) from dual" );
+        if ($row = oci_fetch_array($result, OCI_RETURN_NULLS)) {
+			$timestamp = $row[0];
+		}else{
+		    echo "<p> not timestamp </p>";
+			exit;
+		}
+		oci_free_statement( $result );
+		
+		$result = run_my_query( $conn , "insert into tblbatch ( batchdate , category , name , invoiceno , filename ) VALUES(".$timestamp.",'".$category."','".$batch_name."','".$invoice_no."','".$file_name."')" );
+		oci_commit($conn);
+		$result = run_my_query( $conn , "select batchid from tblbatch where batchdate=$timestamp" );
+        if ($row = oci_fetch_array($result, OCI_RETURN_NULLS)) {
+			$Batch_ID = $row[0];
+		}else{
+		    echo "<p> not insert (select batchid from tblbatch where batchdate='$timestamp') </p>";
+			exit;
+		}
+
+
+		$inc_amount = 0;
+		$pin_total=0;
+		$tmp_total=0;
+		$a_row = 0;	
+		$a_pin_total = 0;
+		if( $handle ){
+			$keyA = pack( "H*" , "1111111111111111" );
+			$keyB = pack( "H*" , "1111111111111111" );
+			$head = fgets( $handle , 100 );
+			echo "<p> $head </p>";
+			while( !feof( $handle ) ){
+				$line = fgets( $handle , 100 );
+				if( substr( $category,0,3) == '935' ){
+					if( strlen( $line ) == 35 || strlen( $line ) == 36 || strlen( $line ) == 37 || strlen( $line ) == 40 || strlen( $line ) == 41 ){
+						if( strlen( $line ) == 40 || strlen( $line ) == 41 ){
+							sscanf( $line , "IR%12s%16s%9s" , $serial , $pin , $amount );
+						}else{
+							sscanf( $line , "IR%12s%12s%9s" , $serial , $pin , $amount );
+						}	
+						
+			
+						if( $amount == $CategoryTable[ $category ] ){			
+						
+							$part1 = mcrypt_ecb (MCRYPT_DES, $keyA, $pin , MCRYPT_ENCRYPT);
+							$part2 = mcrypt_ecb (MCRYPT_DES, $keyB, $part1 , MCRYPT_DECRYPT);
+							$encrypted_data = mcrypt_ecb (MCRYPT_DES, $keyA, $part2 , MCRYPT_ENCRYPT);
+							
+    						//echo "<p> serial $serial </p>";		
+		                    $statement = oci_parse( $conn , "insert into $target_table ( pinserial,category,chargepin,batchid) VALUES (:serial,:categ,:chrgpin,:batch)" );
+    						
+    						oci_bind_by_name( $statement , ":serial" , $serial , -1 );
+    						oci_bind_by_name( $statement , ":categ" , $category , -1 );
+    						oci_bind_by_name( $statement , ":chrgpin" , bin2hex($encrypted_data) , -1 );
+    						oci_bind_by_name( $statement , ":batch" , $Batch_ID , -1 );
+    						oci_execute( $statement );
+    						$a_row = oci_num_rows($statement);
+                            $pin_total ++;
+							$a_pin_total = $a_pin_total + $a_row;
+						}else{
+							$inc_amount ++;
+							//echo "<p>amount is incorrect $serial</p>";
+						}
+					}else{
+						echo "<p>".strlen( $line )."</p>";
+					}
+				}else if( $category == '9191' or $category == '9192' ){
+					if( strlen( $line ) == 29 || strlen( $line ) == 31 ){
+						sscanf( $line , "%15s;%13s" , $serial , $pin );
+						
+						$part1 = mcrypt_ecb (MCRYPT_DES, $keyA, $pin , MCRYPT_ENCRYPT);
+						$part2 = mcrypt_ecb (MCRYPT_DES, $keyB, $part1 , MCRYPT_DECRYPT);
+						$encrypted_data = mcrypt_ecb (MCRYPT_DES, $keyA, $part2 , MCRYPT_ENCRYPT);
+						
+						
+                        $statement = oci_parse( $conn , "insert into $target_table ( pinserial,category,chargepin,batchid) VALUES (:serial,:categ,:chrgpin,:batch)" );
+                        
+                        oci_bind_by_name( $statement , ":serial" , $serial , -1 );
+                        oci_bind_by_name( $statement , ":categ" , $category , -1 );
+                        oci_bind_by_name( $statement , ":chrgpin" , bin2hex($encrypted_data) , -1 );
+                        oci_bind_by_name( $statement , ":batch" , $Batch_ID , -1 );
+                        oci_execute( $statement );
+                        $a_row = oci_num_rows($statement);
+				        oci_free_statement( $statement );
+                        $pin_total ++;
+                        $a_pin_total = $a_pin_total + $a_row;
+					}else{
+						echo "<p>".strlen( $line )."</p>";
+					}
+				}else if( substr( $category , 0 ,3 ) == '932' ){
+					if( strlen( $line ) == 28 || strlen( $line ) == 29 ){
+						sscanf( $line , "%12s;%14s" , $serial , $pin );
+						
+						$part1 = mcrypt_ecb (MCRYPT_DES, $keyA, $pin , MCRYPT_ENCRYPT);
+						$part2 = mcrypt_ecb (MCRYPT_DES, $keyB, $part1 , MCRYPT_DECRYPT);
+						$encrypted_data = mcrypt_ecb (MCRYPT_DES, $keyA, $part2 , MCRYPT_ENCRYPT);
+						
+						
+                        $statement = oci_parse( $conn , "insert into $target_table ( pinserial,category,chargepin,batchid) VALUES (:serial,:categ,:chrgpin,:batch)" );
+                        
+                        oci_bind_by_name( $statement , ":serial" , $serial , -1 );
+                        oci_bind_by_name( $statement , ":categ" , $category , -1 );
+                        oci_bind_by_name( $statement , ":chrgpin" , bin2hex($encrypted_data) , -1 );
+                        oci_bind_by_name( $statement , ":batch" , $Batch_ID , -1 );
+                        oci_execute( $statement );
+                        $a_row = oci_num_rows($statement);
+				        oci_free_statement( $statement );
+                        $pin_total ++;
+                        $a_pin_total = $a_pin_total + $a_row;
+					}else{
+						echo "<p>".strlen( $line )."</p>";
+					}
+				}
+			}
+		}
+		
+		echo "<p>amount is incorrect ".$inc_amount."</p>";
+		echo "<p>".$a_pin_total." , ".$pin_total."</p>";
+		
+		if( $a_pin_total == $pin_total || $a_pin_total == 0 ){
+			if( $pin_total > 0 ){
+				run_my_query( $conn , "UPDATE tblbatch SET total=$a_pin_total WHERE batchid=$Batch_ID" );
+			}
+		    echo "<p>Commit</p>";
+			oci_commit($conn);
+		}else{
+		    echo "<p>Rollback</p>";
+			oci_rollback($conn);		
+        }
+			
+		fclose( $handle );
+		
+		//echo $str;
+		
+	}
+	
+?>
+
+<table width="100%" border="0">
+	<tr>
+		<td><a href=/voucher/index.php>Home</a></td>
+	</tr>
+
+<tr>
+<td>
+<table width="100%" border="0" style="TABLE-LAYOUT: auto; CURSOR: auto; BORDER-COLLAPSE: collapse">
+	<tr>
+		<td>
+			<form method="post" enctype="multipart/form-data" >
+			  <label> Category
+<?
+//			mysql_query( "set names 'utf8'" );
+//			$result = mysql_query( "select Name,Category from tblCategory" );
+//		  if( !$result ){
+//				echo "<P> error ";
+//				echo mysql_error( $msql );
+//				echo "</p>";
+//				exit;
+//			}
+//	  	$count = mysql_num_rows( $result );
+?>
+			  <select size=<? echo "\"".$c_count."\""; ?> name="Category">
+
+<?
+			$i = 0;
+			while( $i < $c_count ){
+				//$row = mysql_fetch_row( $result );
+//				if( $row[1] == "21" )
+//					$sel = "selected";
+//				else
+//					$sel = "";
+				$sel = "";
+				echo "<option value=\"".$cat_i[$i]["Category"]."\" ".$sel." >".$cat_i[$i]["Name"]."</option>\n";
+				$i++;
+			}
+			//mysql_free_result( $result );
+			
+?>
+			  </select>
+			  </label>
+			  <label> Invoice No
+			  <input name="InvoiceNo" type="text" size="40"/>
+			  </label>
+			  <label> Batch Name
+			  <input name="BatchName" type="text" size="40"/>
+			  </label>
+			  <label> Import
+			  <input name="Filename" type="file" size="40"/>
+			  </label>
+			  <input name="Submit2" type="submit" id="Submit2" value="Import" />
+			</form>
+		</td>
+	</tr>
+	
+<?
+  	//mysql_query("SET NAMES 'utf8'", $msql);
+/*
+	$result = mysql_query( "select unix_timestamp()-120" , $msql );
+	if( $result ){
+		$row = mysql_fetch_row( $result );
+		$from_time = $row[0];
+	}
+	$result = mysql_query( "select count(*),unix_timestamp()-min(RequestTime) from tblOnline where RequestCh='pec_shetab' and RequestTime>".$from_time , $msql );
+	if( $result ){
+		$row = mysql_fetch_row( $result );
+		$tps = $row[0];
+	}
+	*/
+	
+//	mysql_query( "set names 'utf8'" );
+//	$result = mysql_query( "select PinId,PinSerial,ChargeFlag,RecordTime,TraceNo,TxnDate,RRN,from_unixtime(tblBatch.BatchDate),Amount from tblPins inner join tblBatch on tblPins.BatchId=tblBatch.BatchId limit 0,100" , $msql );
+//  	if( !$result ){
+//		echo "<P> error ";
+//		echo mysql_error( $msql );
+//		echo "</p>";
+//		exit;
+//	}
+
+	//$myp = popen( "/usr/bin/upt" , 'r' );
+	//$buff = fread( $myp , 3 );
+	//pclose( $myp );
+
+		
+?>
+</table>
+<table width="100%" border="1">
+  <?
+//  	$count = mysql_num_rows( $result );
+//	$i = 0;
+//	$last_time="";
+//	while( $i < $count ){
+//		$row = mysql_fetch_row( $result );
+//		if( $i==0 ){
+//			$last_time = $row[1];
+//		}
+//		$extra="";
+//		if( $i % 2 == 0 )
+//			$extra = "bgcolor=\"#CCFFFF\"";
+//		if( $row[2] == "1" )
+//			$extra = "bgcolor=\"#FF9900\"";
+//			
+//		echo "<tr $extra>";
+//		echo "<th scope=\"row\" align=\"center\">$row[0]</th>";
+//		echo "<td align=\"center\">$row[1]</td>";
+//		echo "<td align=\"center\">$row[3]</td>";
+//		echo "<td align=\"center\">$row[4]</td>";
+//		echo "<td align=\"center\">$row[6]</td>";
+//		echo "<td align=\"center\">$row[7]</td>";
+//		echo "<td align=\"center\">$row[8]</td>";
+//		echo "</tr>";
+//		$i++;
+//	}
+	oci_close( $conn );
+  ?>
+</table>
+
+</body>
+</html>
+

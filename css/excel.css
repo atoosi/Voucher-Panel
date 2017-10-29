@@ -1,0 +1,123 @@
+.sort-table {
+	font:		Icon;
+	border:		1px Solid ThreeDShadow;
+	background:	Window;
+	color:		WindowText;
+}
+
+.sort-table thead {
+	background:	ButtonFace;
+}
+
+.sort-table .header-title {
+	border: 	0;
+	vertical-align:	middle;
+}
+
+.sort-table .header-container {
+	text-align: 	left;
+}
+
+.sort-table td {
+	border-right:	1px solid;
+	border-bottom:	1px solid;
+	border-color:	#c0c0c0;
+	padding:	2px 5px;
+}
+
+.sort-table thead td {
+	border:			1px solid;
+	border-color:	ButtonHighlight ButtonShadow
+					ButtonShadow ButtonHighlight;
+	cursor:			default;
+}
+
+.sort-table thead td:active {
+	border-color:	ButtonShadow ButtonHighlight
+					ButtonHighlight ButtonShadow;
+	padding:		3px 4px 1px 6px;
+}
+
+.sort-table thead td[_sortType=None]:active {
+	border-color:	ButtonHighlight ButtonShadow
+					ButtonShadow ButtonHighlight;
+	padding:		2px 5px;
+}
+
+
+
+.sort-arrow {
+	width:					11px;
+	height:					11px;
+	background-position:	center center;
+	background-repeat:		no-repeat;
+	margin:					0 2px;
+}
+
+.sort-arrow.descending {
+	background-image:		url("../images/downsimple.png");
+
+}
+
+.sort-arrow.ascending {
+	background-image:		url("../images/upsimple.png");
+}
+
+
+
+.select	{
+	border: 0 inset buttonface;
+	font: icon;
+	cursor: default;
+}
+
+.selected {
+	border: 0 inset buttonface;
+	background: window;
+	padding: 0;
+	font: icon;
+}
+
+.selectTable {
+	height: 100%;
+	width: 100%;
+	border: 2 inset buttonhighlight;
+	background: buttonface;
+}
+
+.simpleSelectTable {
+	width: 100%;
+	font: Icon;
+}
+
+.option {
+	font: icon;
+	padding: 1;
+	padding-left: 3;
+	padding-right: 3;
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.dropDown {
+	position: absolute;
+	visibility: hidden;
+	width: 100%;
+	height: 400px;
+	overflow: auto;
+	border: 1 solid windowtext;
+	padding: 0;
+	background: window;
+}
+
+.select .button	{
+	width: 16px;
+	height: 5px;
+	font-family: webdings;
+	font-weigth: bold;
+	padding: 0;
+	font-size: 13px;
+	border: 2 outset buttonhighlight;
+	background: buttonface;
+}

@@ -1,0 +1,144 @@
+a:link
+{
+	color: rgb(0,0,102); 
+}
+a:visited
+{
+	color: rgb(0,0,120); 
+} 
+a:active 
+{
+	color: rgb(153,0,255);
+}
+body
+{
+	font-family: Tahoma;
+	background-color: rgb(255,255,255);
+	color: #000000; 
+}
+table
+{
+	table-layout: auto;
+	border-collapse: collapse;
+}
+
+h1, h2, h3, h4, h5, h6
+{
+	font-family: Book Antiqua, Times New Roman, Times;
+}
+h1
+{
+	color: rgb(204,153,0);
+}
+h2
+{
+	color: rgb(51,102,51); 
+}
+h3
+{
+	color: rgb(102,0,51); 
+}
+h4
+{
+	color: rgb(51,102,51);
+}
+h5
+{
+	color: rgb(102,0,51);
+}
+h6
+{
+	color: rgb(51,102,51);
+}
+a
+{ 
+	font-family: Tahoma;
+	text-decoration: none
+}
+ label
+{
+width: 30em;
+float: right;
+text-align: right;
+margin-right: 0.5em;
+display: block
+}
+
+table.STable tr:hover td{
+  background: #FFD8AA;
+  border: 1px solid #03476F;
+  color: #000000;
+}
+  
+ .submit input
+{
+margin-right: 6.5em;
+}
+input
+{
+color: #781351;
+background: #fee3ad;
+border: 1px solid #781351;
+}
+
+.submit input
+{
+color: #000;
+background: #ffa20f;
+border: 2px outset #d7b9c9
+}
+fieldset
+{
+border: 1px solid #781351;
+width: 30em
+}
+
+legend
+{
+color: #fff;
+background: #ffa20c;
+border: 1px solid #781351;
+padding: 2px 6px
+}
+
+.hovermenu ul{
+font: bold 13px Tahoma;
+padding-left: 0;
+margin-left: 0;
+height: 30px;
+}
+
+.hovermenu ul li{
+font: bold 13px Tahoma;
+list-style: none;
+display: inline;
+}
+
+.hovermenu ul li d{
+font: bold 13px Tahoma;
+padding: 2px 2em;
+text-decoration: none;
+float: left;
+color: black;
+background-color: #BFF2BF;
+border: 2px solid #FFF2BF;
+}
+
+.hovermenu ul li a{
+font: bold 13px Tahoma;	
+padding: 0px 0.4em;
+text-decoration: none;
+float: left;
+color: black;
+background-color: #FFF2FF;
+border: 2px solid #FFF2BF;
+}
+
+.hovermenu ul li a:hover{
+background-color: #FFE271;
+border-style: outset;
+}
+
+html>body .hovermenu ul li a:active{ /* Apply mousedown effect only to NON IE browsers */
+border-style: inset;
+}

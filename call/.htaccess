@@ -1,0 +1,4 @@
+AuthName "restricted stuff"
+AuthType Basic
+AuthUserFile /usr/local/etc/httpd/users
+require user admin callcenter calladmin call

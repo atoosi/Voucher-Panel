@@ -1,0 +1,32 @@
+declare
+cdate number;
+recs number;
+move_recs number;
+l_string nvarchar2(255);
+begin
+recs := 0;
+cdate := to_char(sysdate-2,'yyyymmdd');
+select count(1) into recs from tblpins where capturedate = cdate and rrn is not null;
+
+l_string := ' move data for ' || cdate || ' recs = ' || recs;
+dbms_output.put_line(move_recs);
+
+insert into tblpinsold(pinid,chargeflag,recordtime,updatetime,buydate,traceno,txndate,rrn,authid,amount,category,termno,cardno,pinserial,batchid,chargepin,postype,mobileno,capturedate,supplier) select pinid,chargeflag,recordtime,updatetime,buydate,traceno,txndate,rrn,authid,amount,category,termno,cardno,pinserial,batchid,chargepin,postype,mobileno,capturedate,supplier from tblpins where capturedate=cdate and rrn is not null;
+select count(1) into move_recs from tblpinsold where capturedate=cdate and rrn is not null;
+l_string := ' move_recs = ' || move_recs;
+dbms_output.put_line(move_recs);
+if move_recs = recs then
+dbms_output.put_line(' delete them');
+delete from tblpins where capturedate=cdate and rrn is not null;
+l_string := ' to delete = ' || SQL%ROWCOUNT;
+dbms_output.put_line(move_recs);
+if SQL%ROWCOUNT = recs then
+commit;
+else
+rollback;
+end if;
+else
+rollback;
+end if;
+
+end;

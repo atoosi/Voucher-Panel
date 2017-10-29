@@ -1,0 +1,220 @@
+[disabled] {
+	color:			GrayText;
+}
+
+.dialog-component {
+	position:		absolute;
+	-moz-box-sizing:	border-box;
+	overflow:		hidden;
+	font:			11px Tahoma, Verdana, Arial, Sans-Serif;
+}
+
+.dialog-component {
+	overflow:		-moz-scrollbars-none;
+}
+
+/* IE (BackCompat) uses content box for Images */
+
+img.dialog-component {
+	-moz-box-sizing:	content-box;
+}
+
+.dialog-label {
+	position:		absolute;
+	-moz-box-sizing:	border-box;
+	overflow:		hidden;
+	text-overflow:		ellipsis;
+	cursor:			default;
+	font:			11px Tahoma, Verdana, Arial, Sans-Serif;
+}
+
+.dialog-label {
+	overflow:		-moz-scrollbars-none;
+}
+
+.dialog-label-opaco {
+	position:		absolute;
+	background-color:	ThreeDFace;
+}
+
+
+.dialog-line {
+	position:		absolute;
+	height: 		1px;
+	border-top:		1px Solid ThreeDShadow;
+}
+
+.mnemonic {
+	text-decoration:	underline;
+}
+
+.dialog-button {
+	position:		absolute;
+	-moz-box-sizing:	border-box;
+	overflow:		hidden;
+	font:			11px Tahoma, Verdana, Arial, Sans-Serif;
+	text-align:		center;
+	padding:		2px;
+}
+
+.dialog-button {
+	overflow:		-moz-scrollbars-none;
+}
+
+.dialog-check-box-input {
+	-moz-box-sizing:	border-box;
+	width:			13px;
+	height:			13px;
+	vertical-align:		middle;
+	text-align:		center;
+	-moz-user-focus:	ignore;
+	padding:		0;
+	margin:			0 auto 0 auto;
+}
+
+
+
+
+/*****************************************************************************
+ * Window                                                                    *
+ *****************************************************************************/
+
+.dialog-window {	/* extends component */
+	position:		absolute;
+	-moz-box-sizing:	border-box;
+	overflow:		hidden;
+	background-color:	ThreeDFace;
+	border:			2px outset;
+	-moz-border-left-colors:	ThreeDLightShadow ThreeDHighlight;
+	-moz-border-right-colors:	ThreeDDarkShadow ThreeDShadow;
+	-moz-border-top-colors:		ThreeDLightShadow ThreeDHighlight;
+	-moz-border-bottom-colors:	ThreeDDarkShadow ThreeDShadow;
+
+	width:			400px;
+	height:			200px;
+	z-index:		10000;
+	font:			11px Tahoma, Verdana, Arial, Sans-Serif;
+}
+
+.dialog-window {
+	overflow:		-moz-scrollbars-none;
+}
+
+.dialog-window-caption {	/* extends component */
+	position:		absolute;
+	-moz-box-sizing:	border-box;
+	overflow:		hidden;
+	background-color:	InactiveCaption;
+	cursor:			default;
+	border-bottom:		1px solid ThreeDFace;
+}
+
+.dialog-window-caption {
+	overflow:		-moz-scrollbars-none;
+}
+
+.dialog-window.active .dialog-window-caption {
+	background-color:	ActiveCaption;
+}
+
+.dialog-window-content-pane {	/* extends component */
+	position:		absolute;
+	-moz-box-sizing:	border-box;
+	overflow:		hidden;
+	cursor:			default;
+}
+
+.dialog-window-content-pane {
+	overflow:		-moz-scrollbars-none;
+}
+
+.dialog-window-caption .dialog-label {
+	-moz-box-sizing:	border-box;
+	color:			InactiveCaptionText;
+	font:			Caption;
+	padding:		2px;
+	font-size:		14px !important;
+	font-weight:		bold;
+}
+
+.dialog-window.active .dialog-window-caption .dialog-label {
+	color:			CaptionText;
+}
+
+.dialog-window .dialog-window-caption .dialog-button {
+	-moz-box-sizing:	border-box;
+	font-family:		Marlett !important;
+	font-weight:		normal !important;
+	font-size:		14px !important;
+	width:			16px;
+	height:			14px;
+	overflow:		hidden;
+	padding:		2;
+	border-width:		2px;
+	/* enforce win classic */
+	background-color:	ButtonFace;
+	cursor:			default !important;
+	/*
+	-moz-user-select:	none;
+	*/
+}
+
+.dialog-window .dialog-window-caption .dialog-button {
+	overflow:		-moz-scrollbars-none;
+}
+
+.dialog-window .dialog-window-caption .dialog-button span {
+	-moz-box-sizing:	border-box;
+	position:		relative;
+	top:			-1px;
+	left:			0px;
+	cursor:			default !important;
+}
+
+/* Mozilla overrides for the buttons */
+
+.dialog-window .dialog-window-caption > .dialog-button {
+	-moz-appearance:	none;
+	border:			2px outset;
+	-moz-border-left-colors:	ThreeDHighlight ThreeDLightShadow;
+	-moz-border-right-colors:	ThreeDDarkShadow ThreeDShadow;
+	-moz-border-top-colors:		ThreeDHighlight ThreeDLightShadow;
+	-moz-border-bottom-colors:	ThreeDDarkShadow ThreeDShadow;
+}
+
+.dialog-window .dialog-window-caption > .dialog-button:active {
+	border:			2px inset;
+	-moz-border-right-colors:	ThreeDHighlight ThreeDLightShadow;
+	-moz-border-left-colors:	ThreeDShadow ThreeDDarkShadow;
+	-moz-border-bottom-colors:	ThreeDHighlight ThreeDLightShadow;
+	-moz-border-top-colors:		ThreeDShadow ThreeDDarkShadow;
+}
+
+.dialog-window .dialog-window-caption .dialog-button > span {
+	display:		none;
+}
+
+.dialog-window .dialog-window-caption > .dialog-button {
+	background-position:	1px 0px;
+	background-repeat:	no-repeat;
+}
+
+.dialog-window .dialog-window-caption > .dialog-button:active {
+	background-position:	2px 1px;
+}
+
+.dialog-window .dialog-window-caption > .dialog-button[buttontype=minimize] {
+	background-image:	url("../images/minimize.gif");
+}
+
+.dialog-window .dialog-window-caption > .dialog-button[buttontype=maximize] {
+	background-image:	url("../images/maximize.gif");
+}
+
+.dialog-window .dialog-window-caption > .dialog-button[buttontype=restore] {
+	background-image:	url("../images/restore.gif");
+}
+
+.dialog-window .dialog-window-caption > .dialog-button[buttontype=close] {
+	background-image:	url("../images/close.gif");
+}
